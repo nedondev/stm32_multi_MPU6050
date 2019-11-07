@@ -270,6 +270,7 @@ int MPU6050_read(unsigned char start, unsigned char *pData, int size)
 	//UART_string("rawData:", &huart2);
 	//UART_raw(pData, size, &huart2);
 	//UART_string("\r\n", &huart2);
+	//UART_string("\n", &huart2);
   return (0);  // return : no error
 }
 
@@ -401,7 +402,8 @@ void calibrate_sensors(uint8_t index) {
 	//Serial.println("Starting Calibration");
 	UART_string("Starting Calibration : ", &huart2);
 	UART_template("%d", index, &huart2);
-	UART_string("\r\n", &huart2);
+	//UART_string("\r\n", &huart2);
+	UART_string("\n", &huart2);
 		
 	// Discard the first set of values read from the IMU
 	read_gyro_accel_vals((unsigned char *) &accel_t_gyro);
@@ -435,7 +437,8 @@ void calibrate_sensors(uint8_t index) {
 	//Serial.println("Finishing Calibration");
 	UART_string("Finishing Calibration :", &huart2);
 	UART_template("%d", index, &huart2);
-	UART_string("\r\n", &huart2);
+	//UART_string("\r\n", &huart2);
+	UART_string("\n", &huart2);
 }
 
 /* USER CODE END 0 */
@@ -487,7 +490,8 @@ int main(void)
 		reading = c;
 		UART_string("WHO_AM_I: ", &huart2);
 		UART_hex(reading, &huart2);
-		UART_string("\r\n", &huart2);
+		//UART_string("\r\n", &huart2);
+		UART_string("\n", &huart2);
 		
 		// According to the datasheet, the 'sleep' bit
 		// should read a '1'. But I read a '0'.
@@ -499,7 +503,8 @@ int main(void)
 		reading = c;
 		UART_string("PWR_MGMT_2: ", &huart2);
 		UART_hex(reading = c, &huart2);
-		UART_string("\r\n", &huart2);
+		//UART_string("8", &huart2);
+		UART_string("\n", &huart2);
 
 		// Clear the 'sleep' bit to start the sensor.
 		MPU6050_write_reg(MPU6050_PWR_MGMT_1, 0);
@@ -518,7 +523,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		for(uint8_t index = 4; index < 5; index++){
+		for(uint8_t index = 0; index < 6; index++){
 			selectI2CChannels(index);
 			int error;
 			accel_t_gyro_union accel_t_gyro;
@@ -627,12 +632,12 @@ int main(void)
 			set_last_read_angle_data(t_now, angle_x, angle_y, angle_z, unfiltered_gyro_angle_x, unfiltered_gyro_angle_y, unfiltered_gyro_angle_z, index);
 
 			// Send the data to the serial port
-			UART_string("Index: ", &huart2);
+			UART_string("Index:", &huart2);
 			UART_template("%d", index, &huart2);
 			//Serial.print(F("DEL:"));              //Delta T
-			UART_string("DEL: ", &huart2);
+			UART_string("#DEL:", &huart2);
 			//Serial.print(dt, DEC);
-			UART_template("%d", dt, &huart2);
+			UART_float("%.2f", dt, &huart2);
 			//Serial.print(F("#ACC:"));              //Accelerometer angle
 			UART_string("#ACC:", &huart2);
 			//Serial.print(accel_angle_x, 2);
@@ -670,9 +675,10 @@ int main(void)
 			//Serial.print(angle_z, 2);
 			UART_float("%.2f", angle_z, &huart2);
 			//Serial.println(F(""));
-			UART_string("\r\n", &huart2);
+			//UART_string("\r\n", &huart2);
+			UART_string("\n", &huart2);
 			// Delay so we don't swamp the serial port
-			HAL_Delay(5);
+			//HAL_Delay(5);
 		}
 	}	
   /* USER CODE END 3 */

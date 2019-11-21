@@ -66,8 +66,14 @@
             console.log("angle_y: ", data['angle_y']);
             console.log("angle_z: ", data['angle_z']);
             if(!isNaN(parseInt(data['id']))){
-                mesh[parseInt(data['id'])].rotation.z = THREE.Math.degToRad(data.angle_x);
-                mesh[parseInt(data['id'])].rotation.x = THREE.Math.degToRad(data.angle_y);
+                if(parseInt(data['id']) > 4){
+                    mesh[parseInt(data['id'])].rotation.z = THREE.Math.degToRad(data.angle_x);
+                    mesh[parseInt(data['id'])].rotation.x = THREE.Math.degToRad(data.angle_y);
+                }
+                else{
+                    mesh[parseInt(data['id'])].rotation.z = THREE.Math.degToRad(data.angle_x);
+                    mesh[parseInt(data['id'])].rotation.x = -THREE.Math.degToRad(data.angle_y);
+                }
             }
             socket.emit('message', {"get":"data"});
         })

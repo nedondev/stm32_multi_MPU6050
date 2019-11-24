@@ -29,6 +29,8 @@ test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h
+test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
@@ -40,6 +42,7 @@ test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 test1_i2c2uart\usbd_ctlreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
+test1_i2c2uart\usbd_ctlreq.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 test1_i2c2uart\usbd_ctlreq.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 test1_i2c2uart\usbd_ctlreq.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 test1_i2c2uart\usbd_ctlreq.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h

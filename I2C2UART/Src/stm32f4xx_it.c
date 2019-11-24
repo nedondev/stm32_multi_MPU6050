@@ -75,6 +75,7 @@ typedef union
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+extern int sensor_list[SENSOR_NUM];
 extern uint32_t last_read_time[8];
 extern float         last_x_angle[8];  // These are the filtered angles
 extern float         last_y_angle[8];
@@ -132,6 +133,8 @@ extern void calibrate_sensors(uint8_t index);
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+extern DMA_HandleTypeDef hdma_usart2_rx;
+extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -278,10 +281,10 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-	for(int j =0; j< 6;j++){
-		selectI2CChannels(j);
+	for(int j =0; j< SENSOR_NUM;j++){
+		selectI2CChannels(sensor_list[j]);
 		//Initialize the angles
-		calibrate_sensors(j);  
+		calibrate_sensors(sensor_list[j]);  
 		set_last_read_angle_data(HAL_GetTick(), 0, 0, 0, 0, 0, 0, j);
 	}
   /* USER CODE END EXTI0_IRQn 0 */
@@ -289,6 +292,34 @@ void EXTI0_IRQHandler(void)
   /* USER CODE BEGIN EXTI0_IRQn 1 */
 
   /* USER CODE END EXTI0_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 stream5 global interrupt.
+  */
+void DMA1_Stream5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
 }
 
 /**

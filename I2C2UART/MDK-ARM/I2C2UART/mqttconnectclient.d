@@ -1,0 +1,11 @@
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTConnectClient.c
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTPacket.h
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTConnect.h
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTPublish.h
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTSubscribe.h
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTUnsubscribe.h
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTFormat.h
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\StackTrace.h
+test1_i2c2uart\mqttconnectclient.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+test1_i2c2uart\mqttconnectclient.o: ..\..\MQTTPacket\src\MQTTPacket.h
+test1_i2c2uart\mqttconnectclient.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

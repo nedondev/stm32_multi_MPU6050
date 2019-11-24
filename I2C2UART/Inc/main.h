@@ -33,7 +33,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -149,6 +149,8 @@ void Error_Handler(void);
 #define MPU6050_WHO_AM_I           0x75   // R
 
 #define MPU6050_I2C_ADDRESS 0x68
+#define SENSOR_NUM 4
+#define WEIGHT_NUM 1
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

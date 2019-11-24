@@ -20,6 +20,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
+#include "dma.h"
 #include "i2c.h"
 #include "usart.h"
 #include "usb_device.h"
@@ -36,7 +38,8 @@
 #include "string.h"
 #include "math.h"
 #include "usbd_cdc_if.h"
-
+#include "ESP-01_STM32.h"
+#include "MQTTPacket.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -86,6 +89,15 @@ typedef union
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+char Rx[20];
+char ate[] = "ATE0\r\n";
+char at[] = "AT\r\n";
+uint32_t count = 1;
+
+MQTTString topicString;
+
+int sensor_list[SENSOR_NUM] = {1,2,3,5}; 
+volatile uint32_t adc_val[WEIGHT_NUM] = {0};
 
 // Use the following global variables and access functions to help store the overall
 // rotation angle of the sensor
@@ -117,6 +129,11 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+	//printf("DMA: ");
+	//printf("%s\n",Rx);
+}
 //Show to UART
 void UART_raw(unsigned char *value, int size, UART_HandleTypeDef *huart){//, char *end){
 	unsigned char *plt_value = value;
@@ -304,6 +321,22 @@ void selectI2CChannels(uint8_t i) {
 	//0x70 is address
 	HAL_I2C_Master_Transmit(&hi2c1, 0x70<<1, temp, 1, 100);
 }
+void SendMQTT(char* payload){
+	// Variable for Packect.
+	unsigned char buf[200];
+	// Length of buf.
+	int buflen = sizeof(buf);
+	// Set Name TOPIC
+	topicString.cstring ="Test";
+	int payloadlen = strlen(payload);
+	// Create Packet to PUBLISH!
+	int lenB = MQTTSerialize_publish(buf, buflen, 0, 0, 0, 0, topicString, (unsigned char*)payload, payloadlen);
+	// Send PUBLISH to...Server.
+	uint8_t check1 = sendData(buf, lenB);
+	// CLEAR RX
+	Rx[0] = 0;
+}
+
 void calibrate_sensors(uint8_t index) {
 	
 	selectI2CChannels(index);
@@ -324,7 +357,10 @@ void calibrate_sensors(uint8_t index) {
 	//UART_template("%d", index, &huart2);
 	//UART_string("\r\n", &huart2);
 	//UART_string("\n", &huart2);
-	printf("Starting Calibration :%d\n",index);	
+	//printf("Starting Calibration :%d\n",index);	
+	char payload[150];
+	sprintf(payload,"Starting Calibration :%d\n",index);
+	SendMQTT(payload);
 	// Discard the first set of values read from the IMU
 	read_gyro_accel_vals((unsigned char *) &accel_t_gyro);
 		
@@ -359,7 +395,9 @@ void calibrate_sensors(uint8_t index) {
 	//UART_template("%d", index, &huart2);
 	//UART_string("\r\n", &huart2);
 	//UART_string("\n", &huart2);
-	printf("Finishing Calibration :%d\n", index);
+	//printf("Finishing Calibration :%d\n", index);
+	sprintf(payload,"Finishing Calibration :%d\n", index);
+	SendMQTT(payload);
 }
 
 /* USER CODE END 0 */
@@ -393,23 +431,127 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   MX_USB_DEVICE_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+	HAL_ADC_Start(&hadc1);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_RESET);
+	// INIT ESP-01
+	while(!(initESP01(&huart2))) {
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_RESET);
+		HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_15);
+		HAL_Delay(100);
+	}
+	// CLEAR RX
+	Rx[0] = 0;
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);
+	HAL_Delay(500);
+	// CONNECT TO ... WIFI!
+	while(!(connectWIFI("nm","rtx2080ti"))) {
+	//while(!(connectWIFI("huawei2","88888888"))) {
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_RESET);
+		Rx[0] = 0;
+	}
+	// CLEAR RX
+	Rx[0] = 0;
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_RESET);
+		HAL_Delay(1500);
+	
+	
+	// OPEN TCP CONNECTION!
+	while(!(openTCPConnect("tailor.cloudmqtt.com", 16347))){
+	//while(!(openTCPConnect("192.168.137.1", 1883))){
+		
+		if(!waitForString("ALREAY CONNECT",10,5000))
+			break;
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);
+		Rx[0] = 0;
+	}
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);
+		HAL_Delay(1000);
+	// CLEAR RX
+	Rx[0] = 0;
+	
+	//MAKE CONNECT!
+	
+	// Init Struct to Create Packect. 
+	MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+	// Variable for Packect.
+	unsigned char buf[200];
+	// Length of buf.
+	int buflen = sizeof(buf);
+	// Don't know!
+	int msgid = 1;
+	int req_qos = 0;
+	// Struct for Name of Toppic!
+	MQTTString temp_topicString = MQTTString_initializer;
+	topicString = temp_topicString;
+	// Text For Publish
+	char* payload = "HELLO N8NNY!!!!";
+	int payloadlen = strlen(payload);
+	// Text For Publish
+	
+	// Byte of Packet. 
+	uint16_t lenB = 0;
+	// SET INSTRUCTION CONNECT PACKET
+	data.clientID.cstring = "me";
+	data.keepAliveInterval = 20;
+	data.cleansession = 1;
+	data.username.cstring = "tizxinbp";
+	data.password.cstring = "u813eLQKHMrn";
+	// Create Packet to Connect...Server.
+	lenB = MQTTSerialize_connect(buf, buflen, &data);
+	// Send CONNECT Packet to...Server.
+	uint8_t check = sendData(buf, lenB);
+	Rx[0] = 0;
+
+	// Set Name TOPIC
+	topicString.cstring ="Test";
+	payloadlen = strlen(payload);
+	// Create Packet to PUBLISH!
+	lenB = MQTTSerialize_publish(buf, buflen, 0, 0, 0, 0, topicString, (unsigned char*)payload, payloadlen);
+	// Send PUBLISH to...Server.
+	uint8_t check1 = sendData(buf, lenB);
+	// CLEAR RX
+	Rx[0] = 0;
+	
 	unsigned char MPU6050write[1];
 	unsigned char MPU6050read[1];
 	int16_t reading;
 	//UART_string("Start communicate", &huart2);
-	printf("Start communicate\n");
+	//printf("Start communicate\n");
 	
 	//setup
-	for(int j =0; j< 6;j++){
-		selectI2CChannels(j);
+	for(int j =0; j< SENSOR_NUM;j++){
+		selectI2CChannels(sensor_list[j]);
 		unsigned char c;
-		int error = MPU6050_read(MPU6050_WHO_AM_I, &c, 1);
-		HAL_Delay(10);
-		reading = c;
+		int error;
+		//int error = MPU6050_read(MPU6050_WHO_AM_I, &c, 1);
+		//HAL_Delay(10);
+		//reading = c;
 		
 		// According to the datasheet, the 'sleep' bit
 		// should read a '1'. But I read a '0'.
@@ -422,17 +564,17 @@ int main(void)
 		//UART_string("PWR_MGMT_2: ", &huart2);
 		//UART_hex(reading = c, &huart2);
 		//UART_string("8", &huart2);
-		printf("PWR_MGMT_2: %x\n", reading);
+		//printf("PWR_MGMT_2: %x\n", reading);
 
 		// Clear the 'sleep' bit to start the sensor.
 		MPU6050_write_reg(MPU6050_PWR_MGMT_1, 0);
 		HAL_Delay(10);
 		
 		//Initialize the angles
-		calibrate_sensors(j);  
+		calibrate_sensors(sensor_list[j]);  
 		set_last_read_angle_data(HAL_GetTick(), 0, 0, 0, 0, 0, 0, j);
 	}
-	/* USER CODE END 2 */
+  /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -441,15 +583,23 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);		
 		
-		for(uint8_t index = 1; index < 4; index++){
-			selectI2CChannels(index);
+		for(uint8_t index = 0; index < SENSOR_NUM; index++){
+			selectI2CChannels(sensor_list[index]);
 			int error;
+			for(uint8_t weight_index = 0; weight_index < WEIGHT_NUM;weight_index++){
+				while(HAL_ADC_PollForConversion(&hadc1,100) != HAL_OK){}
+				adc_val[weight_index]= HAL_ADC_GetValue(&hadc1);
+			}
 			accel_t_gyro_union accel_t_gyro;
 			
 			// Read the raw values.
 			error = read_gyro_accel_vals((unsigned char*) &accel_t_gyro);
-		
+			
 			// Get the time of reading for rotation computations
 			uint32_t t_now = HAL_GetTick();
 		 
@@ -499,30 +649,40 @@ int main(void)
 			
 			//UART_string("Index:", &huart2);
 			//UART_template("%d", index, &huart2);
-			printf("Index:%d",index);
+			//printf("Index:%d",index);
 			//Serial.print(F("DEL:"));              //Delta T
 			//UART_string("#DEL:", &huart2);
 			//Serial.print(dt, DEC);
 			//UART_float("%.2f", dt, &huart2);
-			printf("#DEL:%.2f",dt);
+			//printf("#DEL:%.2f",dt);
 			//Serial.print(F("#FIL:"));             //Filtered angle
 			//UART_string("#FIL:", &huart2);
 			//Serial.print(angle_x, 2);
 			//UART_float("%.2f", angle_x, &huart2);
-			printf("#FIL:%.2f",angle_x);
+			//printf("#FIL:%.2f",angle_x);
 			//Serial.print(F(","));
 			//UART_string(",", &huart2);
 			//Serial.print(angle_y, 2);
 			//UART_float("%.2f", angle_y, &huart2);
-			printf(",%.2f",angle_y);
+			//printf(",%.2f",angle_y);
 			//Serial.print(F(","));
 			//UART_string(",", &huart2);
 			//Serial.print(angle_z, 2);
 			//UART_float("%.2f", angle_z, &huart2);
-			printf(",%.2f\n",angle_z);
+			//printf(",%.2f\n",angle_z);
 			//Serial.println(F(""));
 			//UART_string("\r\n", &huart2);
-			UART_string("\n", &huart2);
+			//UART_string("\n", &huart2);
+			char payload[150];
+			//sprintf(payload,"Index:%d#DEL:%.2f#FIL:%.2f,%.2f,%.2f", index, dt, angle_x, angle_y, angle_z);
+			sprintf(payload,"Index:%d#DEL:%.2f#FIL:%.2f,%.2f,%.2f", index, dt, accel_angle_x, accel_angle_y, accel_angle_z);
+			SendMQTT(payload);
+			/*
+			for(int adc_index = 0; adc_index < WEIGHT_NUM; adc_index++){
+				sprintf(payload,"Index:%d#ADC:%d",index, adc_val[adc_index]);
+			}
+			SendMQTT(payload);
+			*/
 		}
 	}	
   /* USER CODE END 3 */

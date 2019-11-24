@@ -22,6 +22,8 @@ test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4x
 test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
 test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
 test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h
+test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h
 test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 test1_i2c2uart\stm32f4xx_hal_dma.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h

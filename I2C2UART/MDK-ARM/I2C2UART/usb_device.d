@@ -23,6 +23,8 @@ test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_g
 test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
 test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
 test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
+test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h
+test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h
 test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 test1_i2c2uart\usb_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
@@ -40,6 +42,7 @@ test1_i2c2uart\usb_device.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 test1_i2c2uart\usb_device.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 test1_i2c2uart\usb_device.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 test1_i2c2uart\usb_device.o: ../Inc/main.h
+test1_i2c2uart\usb_device.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 test1_i2c2uart\usb_device.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 test1_i2c2uart\usb_device.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 test1_i2c2uart\usb_device.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h

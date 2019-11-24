@@ -38,8 +38,8 @@
 #include "string.h"
 #include "math.h"
 #include "usbd_cdc_if.h"
-#include "ESP-01_STM32.h"
-#include "MQTTPacket.h"
+//#include "ESP-01_STM32.h"
+//#include "MQTTPacket.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -89,15 +89,16 @@ typedef union
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-char Rx[20];
-char ate[] = "ATE0\r\n";
-char at[] = "AT\r\n";
-uint32_t count = 1;
+//for Wifi
+//char Rx[20];
+//char ate[] = "ATE0\r\n";
+//char at[] = "AT\r\n";
+//uint32_t count = 1;
 
-MQTTString topicString;
+//MQTTString topicString;
 
 int sensor_list[SENSOR_NUM] = {1,2,3,5}; 
-volatile uint32_t adc_val[WEIGHT_NUM] = {0};
+uint32_t adc_val[WEIGHT_NUM], buffer[WEIGHT_NUM];
 
 // Use the following global variables and access functions to help store the overall
 // rotation angle of the sensor
@@ -129,107 +130,42 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+//for Wifi
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
 	//printf("DMA: ");
 	//printf("%s\n",Rx);
 }
-//Show to UART
-void UART_raw(unsigned char *value, int size, UART_HandleTypeDef *huart){//, char *end){
-	unsigned char *plt_value = value;
-	int i = 0;
-	while(i < size){
-		char buffer[10];
-		sprintf(buffer, "%2.2x, ", *(plt_value+i));
-		while(__HAL_UART_GET_FLAG(huart,UART_FLAG_TC)==RESET){}
-		HAL_UART_Transmit(huart, (uint8_t*) buffer, strlen(buffer),1000);
-		i++;
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_RESET);
+	
+}
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);
+	for (int i =0; i<WEIGHT_NUM; i++)
+	{
+	  adc_val[i] = buffer[i];
 	}
-}
+}	
 
-void UART_hex(int16_t hex, UART_HandleTypeDef *huart){//, char *end){
-	char buffer[50];
-	sprintf(buffer, "%4.4x, ", hex);
-	//if(strlen(end) != 0){
-	//	int i;
-	//	for(i = strlen(buffer); i < strlen(buffer) + strlen(end); i++)
-	//		buffer[i] = end[i - (strlen(buffer))];
-	//	buffer[i+1] = '\0';
-	//}
-	//sprintf(buffer, "%4.4x\n", strlen(buffer));
-	while(__HAL_UART_GET_FLAG(huart,UART_FLAG_TC)==RESET){}
-	HAL_UART_Transmit(huart, (uint8_t*) buffer, strlen(buffer),1000);
-}
-
-void UART_template(const char *template_uart, int16_t value, UART_HandleTypeDef *huart){//, char *end){
-	char buffer[50];
-	sprintf(buffer, template_uart, value);
-	while(__HAL_UART_GET_FLAG(huart,UART_FLAG_TC)==RESET){}
-	HAL_UART_Transmit(huart, (uint8_t*) buffer, strlen(buffer),1000);
-}
-
-void UART_float(const char *template_uart, float value, UART_HandleTypeDef *huart){//, char *end){
-	char buffer[50];
-	sprintf(buffer, template_uart, value);
-	while(__HAL_UART_GET_FLAG(huart,UART_FLAG_TC)==RESET){}
-	HAL_UART_Transmit(huart, (uint8_t*) buffer, strlen(buffer),1000);
-}
-
-void UART_string(char *string, UART_HandleTypeDef *huart){
-	while(__HAL_UART_GET_FLAG(huart,UART_FLAG_TC)==RESET){}
-	HAL_UART_Transmit(huart, (uint8_t*) string, strlen(string),1000);
-}
-
-// --------------------------------------------------------
-// MPU6050_read
-//
-// This is a common function to read multiple bytes 
-// from an I2C device.
-//
-// It uses the boolean parameter for Wire.endTransMission()
-// to be able to hold or release the I2C-bus. 
-// This is implemented in Arduino 1.0.1.
-//
-// Only this function is used to read. 
-// There is no function for a single byte.
-//
 int MPU6050_read(unsigned char start, unsigned char *pData, int size)
 {
   int i, n, error;
 
-  //Begin a transmission to the I2C slave device with the given address. 
-  // Subsequently, queue bytes for transmission with the write() function and transmit them by calling endTransmission().
 	unsigned char *MPU6050write = &start;
 	HAL_I2C_Master_Transmit(&hi2c1, MPU6050_I2C_ADDRESS<<1, MPU6050write, 1, 1000);
 	HAL_Delay(20);
 	HAL_I2C_Master_Receive(&hi2c1, MPU6050_I2C_ADDRESS<<1, pData, size, 1000);
-	//Test read raw data
-	//UART_string("rawData:", &huart2);
-	//UART_raw(pData, size, &huart2);
-	//UART_string("\r\n", &huart2);
-	//UART_string("\n", &huart2);
   return (0);  // return : no error
 }
-
-
-// --------------------------------------------------------
-// MPU6050_write
-//
-// This is a common function to write multiple bytes to an I2C device.
-//
-// If only a single register is written,
-// use the function MPU_6050_write_reg().
-//
-// Parameters:
-//   start : Start address, use a define for the register
-//   pData : A pointer to the data to write.
-//   size  : The number of bytes to write.
-//
-// If only a single register is written, a pointer
-// to the data has to be used, and the size is
-// a single byte:
-//   int data = 0;        // the data to write
-//   MPU6050_write (MPU6050_PWR_MGMT_1, &c, 1);
 
 int MPU6050_write(unsigned char start, unsigned char *pData, int size)
 {
@@ -245,15 +181,6 @@ int MPU6050_write(unsigned char start, unsigned char *pData, int size)
 	HAL_I2C_Master_Transmit(&hi2c1, MPU6050_I2C_ADDRESS<<1, temp, size, 1000);
   return (0);         // return : no error
 }
-
-// --------------------------------------------------------
-// MPU6050_write_reg
-//
-// An extra function to write a single register.
-// It is just a wrapper around the MPU_6050_write()
-// function, and it is only a convenient function
-// to make it easier to write a single register.
-//
 
 int MPU6050_write_reg(int reg, unsigned char data)
 {
@@ -282,22 +209,11 @@ inline float get_last_gyro_x_angle(uint8_t index) {return last_gyro_x_angle[inde
 inline float get_last_gyro_y_angle(uint8_t index) {return last_gyro_y_angle[index];}
 inline float get_last_gyro_z_angle(uint8_t index) {return last_gyro_z_angle[index];}
 
-int read_gyro_accel_vals(unsigned char* accel_t_gyro_ptr) {
-  // Read the raw values.
-  // Read 14 bytes at once, 
-  // containing acceleration, temperature and gyro.
-  // With the default settings of the MPU-6050,
-  // there is no filter enabled, and the values
-  // are not very stable.  Returns the error value
-  
+int read_gyro_accel_vals(unsigned char* accel_t_gyro_ptr) {  
   accel_t_gyro_union* accel_t_gyro = (accel_t_gyro_union *)accel_t_gyro_ptr;
    
   int error = MPU6050_read(MPU6050_ACCEL_XOUT_H, (unsigned char *)accel_t_gyro, sizeof(*accel_t_gyro));
 
-  // Swap all high and low bytes.
-  // After this, the registers values are swapped, 
-  // so the structure name like x_accel_l does no 
-  // longer contain the lower byte.
   unsigned char swap;
   #define SWAP(x,y) swap = x; x = y; y = swap
 
@@ -321,6 +237,8 @@ void selectI2CChannels(uint8_t i) {
 	//0x70 is address
 	HAL_I2C_Master_Transmit(&hi2c1, 0x70<<1, temp, 1, 100);
 }
+/*
+//for Wifi
 void SendMQTT(char* payload){
 	// Variable for Packect.
 	unsigned char buf[200];
@@ -335,7 +253,7 @@ void SendMQTT(char* payload){
 	uint8_t check1 = sendData(buf, lenB);
 	// CLEAR RX
 	Rx[0] = 0;
-}
+}*/
 
 void calibrate_sensors(uint8_t index) {
 	
@@ -351,20 +269,18 @@ void calibrate_sensors(uint8_t index) {
 	unsigned char c;
 	int error;
 	int16_t reading;
-		
-	//Serial.println("Starting Calibration");
-	//UART_string("Starting Calibration :", &huart2);
-	//UART_template("%d", index, &huart2);
-	//UART_string("\r\n", &huart2);
-	//UART_string("\n", &huart2);
-	//printf("Starting Calibration :%d\n",index);	
-	char payload[150];
-	sprintf(payload,"Starting Calibration :%d\n",index);
-	SendMQTT(payload);
-	// Discard the first set of values read from the IMU
+	
+	//for USB
+	printf("Starting Calibration :%d\n",index);	
+	
+	//for Wifi
+	//char payload[150];
+	//sprintf(payload,"Starting Calibration :%d\n",index);
+	//SendMQTT(payload);
+	
 	read_gyro_accel_vals((unsigned char *) &accel_t_gyro);
 		
-	// Read and average the raw values from the IMU
+	
 	for (int i = 0; i < num_readings; i++) {
 		read_gyro_accel_vals((unsigned char *) &accel_t_gyro);
 		x_accel += accel_t_gyro.value.x_accel;
@@ -390,14 +306,11 @@ void calibrate_sensors(uint8_t index) {
 	base_y_gyro[index] = y_gyro;
 	base_z_gyro[index] = z_gyro;
 		
-	//Serial.println("Finishing Calibration");
-	//UART_string("Finishing Calibration :", &huart2);
-	//UART_template("%d", index, &huart2);
-	//UART_string("\r\n", &huart2);
-	//UART_string("\n", &huart2);
-	//printf("Finishing Calibration :%d\n", index);
-	sprintf(payload,"Finishing Calibration :%d\n", index);
-	SendMQTT(payload);
+	//for USB
+	printf("Finishing Calibration :%d\n", index);
+	//for Wifi
+	//sprintf(payload,"Finishing Calibration :%d\n", index);
+	//SendMQTT(payload);
 }
 
 /* USER CODE END 0 */
@@ -437,7 +350,10 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-	HAL_ADC_Start(&hadc1);
+	//HAL_ADC_Start(&hadc1);
+	HAL_ADC_Start_DMA(&hadc1, buffer, WEIGHT_NUM);
+	/*
+	//for Wifi
 	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_RESET);
@@ -537,7 +453,7 @@ int main(void)
 	uint8_t check1 = sendData(buf, lenB);
 	// CLEAR RX
 	Rx[0] = 0;
-	
+	*/
 	unsigned char MPU6050write[1];
 	unsigned char MPU6050read[1];
 	int16_t reading;
@@ -561,9 +477,6 @@ int main(void)
 		error = MPU6050_read(MPU6050_PWR_MGMT_2, &c, 1);
 		HAL_Delay(10);
 		reading = c;
-		//UART_string("PWR_MGMT_2: ", &huart2);
-		//UART_hex(reading = c, &huart2);
-		//UART_string("8", &huart2);
 		//printf("PWR_MGMT_2: %x\n", reading);
 
 		// Clear the 'sleep' bit to start the sensor.
@@ -572,7 +485,7 @@ int main(void)
 		
 		//Initialize the angles
 		calibrate_sensors(sensor_list[j]);  
-		set_last_read_angle_data(HAL_GetTick(), 0, 0, 0, 0, 0, 0, j);
+		set_last_read_angle_data(HAL_GetTick(), 0, 0, 0, 0, 0, 0, sensor_list[j]);
 	}
   /* USER CODE END 2 */
 
@@ -583,18 +496,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);		
 		
 		for(uint8_t index = 0; index < SENSOR_NUM; index++){
 			selectI2CChannels(sensor_list[index]);
 			int error;
-			for(uint8_t weight_index = 0; weight_index < WEIGHT_NUM;weight_index++){
-				while(HAL_ADC_PollForConversion(&hadc1,100) != HAL_OK){}
-				adc_val[weight_index]= HAL_ADC_GetValue(&hadc1);
-			}
+			//for(uint8_t weight_index = 0; weight_index < WEIGHT_NUM;weight_index++){
+			//	while(HAL_ADC_PollForConversion(&hadc1,100) != HAL_OK){}
+			//	adc_val[weight_index]= HAL_ADC_GetValue(&hadc1);
+			//}
 			accel_t_gyro_union accel_t_gyro;
 			
 			// Read the raw values.
@@ -645,38 +554,20 @@ int main(void)
 			// Update the saved data with the latest values
 			set_last_read_angle_data(t_now, angle_x, angle_y, angle_z, unfiltered_gyro_angle_x, unfiltered_gyro_angle_y, unfiltered_gyro_angle_z, index);
 
-			// Send the data to the serial port
 			
-			//UART_string("Index:", &huart2);
-			//UART_template("%d", index, &huart2);
 			//printf("Index:%d",index);
-			//Serial.print(F("DEL:"));              //Delta T
-			//UART_string("#DEL:", &huart2);
-			//Serial.print(dt, DEC);
-			//UART_float("%.2f", dt, &huart2);
 			//printf("#DEL:%.2f",dt);
-			//Serial.print(F("#FIL:"));             //Filtered angle
-			//UART_string("#FIL:", &huart2);
-			//Serial.print(angle_x, 2);
-			//UART_float("%.2f", angle_x, &huart2);
 			//printf("#FIL:%.2f",angle_x);
-			//Serial.print(F(","));
-			//UART_string(",", &huart2);
-			//Serial.print(angle_y, 2);
-			//UART_float("%.2f", angle_y, &huart2);
 			//printf(",%.2f",angle_y);
-			//Serial.print(F(","));
-			//UART_string(",", &huart2);
-			//Serial.print(angle_z, 2);
-			//UART_float("%.2f", angle_z, &huart2);
 			//printf(",%.2f\n",angle_z);
-			//Serial.println(F(""));
-			//UART_string("\r\n", &huart2);
-			//UART_string("\n", &huart2);
-			char payload[150];
+			printf("Index:%d#DEL:%.2f#FIL:%.2f,%.2f,%.2f\n", index, dt, angle_x, angle_y, angle_z);
+			//for USB
+			printf("ADC:%d\n", adc_val[0]);
+			//for Wifi
+			//char payload[150];
 			//sprintf(payload,"Index:%d#DEL:%.2f#FIL:%.2f,%.2f,%.2f", index, dt, angle_x, angle_y, angle_z);
-			sprintf(payload,"Index:%d#DEL:%.2f#FIL:%.2f,%.2f,%.2f", index, dt, accel_angle_x, accel_angle_y, accel_angle_z);
-			SendMQTT(payload);
+			//sprintf(payload,"Index:%d#DEL:%.2f#FIL:%.2f,%.2f,%.2f", index, dt, accel_angle_x, accel_angle_y, accel_angle_z);
+			//SendMQTT(payload);
 			/*
 			for(int adc_index = 0; adc_index < WEIGHT_NUM; adc_index++){
 				sprintf(payload,"Index:%d#ADC:%d",index, adc_val[adc_index]);

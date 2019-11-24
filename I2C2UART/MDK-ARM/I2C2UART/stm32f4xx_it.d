@@ -31,4 +31,7 @@ test1_i2c2uart\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal
 test1_i2c2uart\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 test1_i2c2uart\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 test1_i2c2uart\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-test1_i2c2uart\stm32f4xx_it.o: ../Inc/stm32f4xx_it.h
+test1_i2c2uart\stm32f4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+test1_i2c2uart\stm32f4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+test1_i2c2uart\stm32f4xx_it.o: ../Inc/i2c.h
+test1_i2c2uart\stm32f4xx_it.o: ../Inc/usart.h

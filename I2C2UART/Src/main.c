@@ -67,95 +67,7 @@ typedef union
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MPU6050_AUX_VDDIO          0x01   // R/W
-#define MPU6050_SMPLRT_DIV         0x19   // R/W
-#define MPU6050_CONFIG             0x1A   // R/W
-#define MPU6050_GYRO_CONFIG        0x1B   // R/W
-#define MPU6050_ACCEL_CONFIG       0x1C   // R/W
-#define MPU6050_FF_THR             0x1D   // R/W
-#define MPU6050_FF_DUR             0x1E   // R/W
-#define MPU6050_MOT_THR            0x1F   // R/W
-#define MPU6050_MOT_DUR            0x20   // R/W
-#define MPU6050_ZRMOT_THR          0x21   // R/W
-#define MPU6050_ZRMOT_DUR          0x22   // R/W
-#define MPU6050_FIFO_EN            0x23   // R/W
-#define MPU6050_I2C_MST_CTRL       0x24   // R/W
-#define MPU6050_I2C_SLV0_ADDR      0x25   // R/W
-#define MPU6050_I2C_SLV0_REG       0x26   // R/W
-#define MPU6050_I2C_SLV0_CTRL      0x27   // R/W
-#define MPU6050_I2C_SLV1_ADDR      0x28   // R/W
-#define MPU6050_I2C_SLV1_REG       0x29   // R/W
-#define MPU6050_I2C_SLV1_CTRL      0x2A   // R/W
-#define MPU6050_I2C_SLV2_ADDR      0x2B   // R/W
-#define MPU6050_I2C_SLV2_REG       0x2C   // R/W
-#define MPU6050_I2C_SLV2_CTRL      0x2D   // R/W
-#define MPU6050_I2C_SLV3_ADDR      0x2E   // R/W
-#define MPU6050_I2C_SLV3_REG       0x2F   // R/W
-#define MPU6050_I2C_SLV3_CTRL      0x30   // R/W
-#define MPU6050_I2C_SLV4_ADDR      0x31   // R/W
-#define MPU6050_I2C_SLV4_REG       0x32   // R/W
-#define MPU6050_I2C_SLV4_DO        0x33   // R/W
-#define MPU6050_I2C_SLV4_CTRL      0x34   // R/W
-#define MPU6050_I2C_SLV4_DI        0x35   // R  
-#define MPU6050_I2C_MST_STATUS     0x36   // R
-#define MPU6050_INT_PIN_CFG        0x37   // R/W
-#define MPU6050_INT_ENABLE         0x38   // R/W
-#define MPU6050_INT_STATUS         0x3A   // R  
-#define MPU6050_ACCEL_XOUT_H       0x3B   // R  
-#define MPU6050_ACCEL_XOUT_L       0x3C   // R  
-#define MPU6050_ACCEL_YOUT_H       0x3D   // R  
-#define MPU6050_ACCEL_YOUT_L       0x3E   // R  
-#define MPU6050_ACCEL_ZOUT_H       0x3F   // R  
-#define MPU6050_ACCEL_ZOUT_L       0x40   // R  
-#define MPU6050_TEMP_OUT_H         0x41   // R  
-#define MPU6050_TEMP_OUT_L         0x42   // R  
-#define MPU6050_GYRO_XOUT_H        0x43   // R  
-#define MPU6050_GYRO_XOUT_L        0x44   // R  
-#define MPU6050_GYRO_YOUT_H        0x45   // R  
-#define MPU6050_GYRO_YOUT_L        0x46   // R  
-#define MPU6050_GYRO_ZOUT_H        0x47   // R  
-#define MPU6050_GYRO_ZOUT_L        0x48   // R  
-#define MPU6050_EXT_SENS_DATA_00   0x49   // R  
-#define MPU6050_EXT_SENS_DATA_01   0x4A   // R  
-#define MPU6050_EXT_SENS_DATA_02   0x4B   // R  
-#define MPU6050_EXT_SENS_DATA_03   0x4C   // R  
-#define MPU6050_EXT_SENS_DATA_04   0x4D   // R  
-#define MPU6050_EXT_SENS_DATA_05   0x4E   // R  
-#define MPU6050_EXT_SENS_DATA_06   0x4F   // R  
-#define MPU6050_EXT_SENS_DATA_07   0x50   // R  
-#define MPU6050_EXT_SENS_DATA_08   0x51   // R  
-#define MPU6050_EXT_SENS_DATA_09   0x52   // R  
-#define MPU6050_EXT_SENS_DATA_10   0x53   // R  
-#define MPU6050_EXT_SENS_DATA_11   0x54   // R  
-#define MPU6050_EXT_SENS_DATA_12   0x55   // R  
-#define MPU6050_EXT_SENS_DATA_13   0x56   // R  
-#define MPU6050_EXT_SENS_DATA_14   0x57   // R  
-#define MPU6050_EXT_SENS_DATA_15   0x58   // R  
-#define MPU6050_EXT_SENS_DATA_16   0x59   // R  
-#define MPU6050_EXT_SENS_DATA_17   0x5A   // R  
-#define MPU6050_EXT_SENS_DATA_18   0x5B   // R  
-#define MPU6050_EXT_SENS_DATA_19   0x5C   // R  
-#define MPU6050_EXT_SENS_DATA_20   0x5D   // R  
-#define MPU6050_EXT_SENS_DATA_21   0x5E   // R  
-#define MPU6050_EXT_SENS_DATA_22   0x5F   // R  
-#define MPU6050_EXT_SENS_DATA_23   0x60   // R  
-#define MPU6050_MOT_DETECT_STATUS  0x61   // R  
-#define MPU6050_I2C_SLV0_DO        0x63   // R/W
-#define MPU6050_I2C_SLV1_DO        0x64   // R/W
-#define MPU6050_I2C_SLV2_DO        0x65   // R/W
-#define MPU6050_I2C_SLV3_DO        0x66   // R/W
-#define MPU6050_I2C_MST_DELAY_CTRL 0x67   // R/W
-#define MPU6050_SIGNAL_PATH_RESET  0x68   // R/W
-#define MPU6050_MOT_DETECT_CTRL    0x69   // R/W
-#define MPU6050_USER_CTRL          0x6A   // R/W
-#define MPU6050_PWR_MGMT_1         0x6B   // R/W
-#define MPU6050_PWR_MGMT_2         0x6C   // R/W
-#define MPU6050_FIFO_COUNTH        0x72   // R/W
-#define MPU6050_FIFO_COUNTL        0x73   // R/W
-#define MPU6050_FIFO_R_W           0x74   // R/W
-#define MPU6050_WHO_AM_I           0x75   // R
 
-#define MPU6050_I2C_ADDRESS 0x68
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -263,9 +175,9 @@ int MPU6050_read(unsigned char start, unsigned char *pData, int size)
   //Begin a transmission to the I2C slave device with the given address. 
   // Subsequently, queue bytes for transmission with the write() function and transmit them by calling endTransmission().
 	unsigned char *MPU6050write = &start;
-	HAL_I2C_Master_Transmit(&hi2c1, MPU6050_I2C_ADDRESS<<1, MPU6050write, 1, 100);
+	HAL_I2C_Master_Transmit(&hi2c1, MPU6050_I2C_ADDRESS<<1, MPU6050write, 1, 1000);
 	HAL_Delay(20);
-	HAL_I2C_Master_Receive(&hi2c1, MPU6050_I2C_ADDRESS<<1, pData, size, 100);
+	HAL_I2C_Master_Receive(&hi2c1, MPU6050_I2C_ADDRESS<<1, pData, size, 1000);
 	//Test read raw data
 	//UART_string("rawData:", &huart2);
 	//UART_raw(pData, size, &huart2);
@@ -305,7 +217,7 @@ int MPU6050_write(unsigned char start, unsigned char *pData, int size)
 		temp[i+1] = *(pData+i);
 	}
 	size++;
-	HAL_I2C_Master_Transmit(&hi2c1, MPU6050_I2C_ADDRESS<<1, temp, size, 100);
+	HAL_I2C_Master_Transmit(&hi2c1, MPU6050_I2C_ADDRESS<<1, temp, size, 1000);
   return (0);         // return : no error
 }
 
@@ -488,10 +400,6 @@ int main(void)
 		int error = MPU6050_read(MPU6050_WHO_AM_I, &c, 1);
 		HAL_Delay(10);
 		reading = c;
-		UART_string("WHO_AM_I: ", &huart2);
-		UART_hex(reading, &huart2);
-		//UART_string("\r\n", &huart2);
-		UART_string("\n", &huart2);
 		
 		// According to the datasheet, the 'sleep' bit
 		// should read a '1'. But I read a '0'.
@@ -523,7 +431,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		for(uint8_t index = 0; index < 6; index++){
+		for(uint8_t index = 1; index < 4; index++){
 			selectI2CChannels(index);
 			int error;
 			accel_t_gyro_union accel_t_gyro;
@@ -534,62 +442,13 @@ int main(void)
 			// Get the time of reading for rotation computations
 			uint32_t t_now = HAL_GetTick();
 		 
-			/*
-			Serial.print(F("Read accel, temp and gyro, error = "));
-			Serial.println(error,DEC);
-			*/
-			//UART_string("Read accel, temp and gyro, error = ", &huart2);
-			//UART_template("%d\r\n", error, &huart2);
-			/*
-			// Print the raw acceleration values
-			Serial.print(F("accel x,y,z: "));
-			Serial.print(accel_t_gyro.value.x_accel, DEC);
-			Serial.print(F(", "));
-			Serial.print(accel_t_gyro.value.y_accel, DEC);
-			Serial.print(F(", "));
-			Serial.print(accel_t_gyro.value.z_accel, DEC);
-			Serial.println(F(""));
-			*/
-			
-			/*
-			UART_string("accel x,y,z: ", &huart2);
-			UART_template("%d", accel_t_gyro.value.x_accel, &huart2);
-			UART_string(", ", &huart2);
-			UART_template("%d", accel_t_gyro.value.y_accel, &huart2);
-			UART_string(", ", &huart2);
-			UART_template("%d\r\n", accel_t_gyro.value.z_accel, &huart2);
-			*/
-			
-			// The temperature sensor is -40 to +85 degrees Celsius.
-			// It is a signed integer.
-			// According to the datasheet: 
-			//   340 per degrees Celsius, -512 at 35 degrees.
-			// At 0 degrees: -512 - (340 * 35) = -12412
-			/*  
-			Serial.print(F("temperature: "));
-			dT = ( (double) accel_t_gyro.value.temperature + 12412.0) / 340.0;
-			Serial.print(dT, 3);
-			Serial.print(F(" degrees Celsius"));
-			Serial.println(F(""));
-		
-
-			// Print the raw gyro values.
-			Serial.print(F("raw gyro x,y,z : "));
-			Serial.print(accel_t_gyro.value.x_gyro, DEC);
-			Serial.print(F(", "));
-			Serial.print(accel_t_gyro.value.y_gyro, DEC);
-			Serial.print(F(", "));
-			Serial.print(accel_t_gyro.value.z_gyro, DEC);
-			Serial.print(F(", "));
-			Serial.println(F(""));
-			*/
-
 			// Convert gyro values to degrees/sec
 			float FS_SEL = 131;
 			/*
 			float gyro_x = (accel_t_gyro.value.x_gyro - base_x_gyro)/FS_SEL;
 			float gyro_y = (accel_t_gyro.value.y_gyro - base_y_gyro)/FS_SEL;
-			float gyro_z = (accel_t_gyro.value.z_gyro - base_z_gyro)/FS_SEL;
+			float gyro_z = (accel_t_gyro.value.z_gyro - b
+			ase_z_gyro)/FS_SEL;
 			*/
 			float gyro_x = (accel_t_gyro.value.x_gyro - base_x_gyro[index])/FS_SEL;
 			float gyro_y = (accel_t_gyro.value.y_gyro - base_y_gyro[index])/FS_SEL;
@@ -601,13 +460,12 @@ int main(void)
 			float accel_x = accel_t_gyro.value.x_accel;
 			float accel_y = accel_t_gyro.value.y_accel;
 			float accel_z = accel_t_gyro.value.z_accel;
-		
+
 			// Get angle values from accelerometer
 			float RADIANS_TO_DEGREES = 180/3.14159;
 			//  float accel_vector_length = sqrt(pow(accel_x,2) + pow(accel_y,2) + pow(accel_z,2));
 			float accel_angle_y = atan(-1*accel_x/sqrt(pow(accel_y,2) + pow(accel_z,2)))*RADIANS_TO_DEGREES;
 			float accel_angle_x = atan(accel_y/sqrt(pow(accel_x,2) + pow(accel_z,2)))*RADIANS_TO_DEGREES;
-
 			float accel_angle_z = 0;
 		
 			// Compute the (filtered) gyro angles
@@ -638,30 +496,6 @@ int main(void)
 			UART_string("#DEL:", &huart2);
 			//Serial.print(dt, DEC);
 			UART_float("%.2f", dt, &huart2);
-			//Serial.print(F("#ACC:"));              //Accelerometer angle
-			UART_string("#ACC:", &huart2);
-			//Serial.print(accel_angle_x, 2);
-			UART_float("%.2f", accel_angle_x, &huart2);
-			//Serial.print(F(","));
-			UART_string(",", &huart2);
-			//Serial.print(accel_angle_y, 2);
-			UART_float("%.2f", accel_angle_y, &huart2);
-			//Serial.print(F(","));
-			UART_string(",", &huart2);
-			//Serial.print(accel_angle_z, 2);
-			UART_float("%.2f", accel_angle_z, &huart2);
-			//Serial.print(F("#GYR:"));
-			UART_string("#GYR:", &huart2);
-			//Serial.print(unfiltered_gyro_angle_x, 2);        //Gyroscope angle
-			UART_float("%.2f", unfiltered_gyro_angle_x, &huart2);
-			//Serial.print(F(","));
-			UART_string(",", &huart2);
-			//Serial.print(unfiltered_gyro_angle_y, 2);
-			UART_float("%.2f", unfiltered_gyro_angle_y, &huart2);
-			//Serial.print(F(","));
-			UART_string(",", &huart2);
-			//Serial.print(unfiltered_gyro_angle_z, 2);
-			UART_float("%.2f", unfiltered_gyro_angle_z, &huart2);
 			//Serial.print(F("#FIL:"));             //Filtered angle
 			UART_string("#FIL:", &huart2);
 			//Serial.print(angle_x, 2);
@@ -677,8 +511,6 @@ int main(void)
 			//Serial.println(F(""));
 			//UART_string("\r\n", &huart2);
 			UART_string("\n", &huart2);
-			// Delay so we don't swamp the serial port
-			//HAL_Delay(5);
 		}
 	}	
   /* USER CODE END 3 */

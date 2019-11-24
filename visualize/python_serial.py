@@ -1,7 +1,7 @@
 import settings
 import serial
 import re
-ser = serial.Serial(settings.SERIAL_PORT, 57600)
+ser = serial.Serial(settings.SERIAL_PORT, 250000)
 print("connected to: " + ser.portstr)
 line_temp = ""
 

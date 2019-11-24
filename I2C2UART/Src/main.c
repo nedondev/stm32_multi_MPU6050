@@ -22,13 +22,21 @@
 #include "main.h"
 #include "i2c.h"
 #include "usart.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#ifdef _GNUC_
+#define PUTCHAR_PROTOTYPE int __to_putchar(int ch)
+	#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+	#endif
 #include "string.h"
 #include "math.h"
+#include "usbd_cdc_if.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -312,11 +320,11 @@ void calibrate_sensors(uint8_t index) {
 	int16_t reading;
 		
 	//Serial.println("Starting Calibration");
-	UART_string("Starting Calibration : ", &huart2);
-	UART_template("%d", index, &huart2);
+	//UART_string("Starting Calibration :", &huart2);
+	//UART_template("%d", index, &huart2);
 	//UART_string("\r\n", &huart2);
-	UART_string("\n", &huart2);
-		
+	//UART_string("\n", &huart2);
+	printf("Starting Calibration :%d\n",index);	
 	// Discard the first set of values read from the IMU
 	read_gyro_accel_vals((unsigned char *) &accel_t_gyro);
 		
@@ -347,10 +355,11 @@ void calibrate_sensors(uint8_t index) {
 	base_z_gyro[index] = z_gyro;
 		
 	//Serial.println("Finishing Calibration");
-	UART_string("Finishing Calibration :", &huart2);
-	UART_template("%d", index, &huart2);
+	//UART_string("Finishing Calibration :", &huart2);
+	//UART_template("%d", index, &huart2);
 	//UART_string("\r\n", &huart2);
-	UART_string("\n", &huart2);
+	//UART_string("\n", &huart2);
+	printf("Finishing Calibration :%d\n", index);
 }
 
 /* USER CODE END 0 */
@@ -385,13 +394,14 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 	unsigned char MPU6050write[1];
 	unsigned char MPU6050read[1];
 	int16_t reading;
-	UART_string("Start communicate", &huart2);
+	//UART_string("Start communicate", &huart2);
+	printf("Start communicate\n");
 	
 	//setup
 	for(int j =0; j< 6;j++){
@@ -409,10 +419,10 @@ int main(void)
 		error = MPU6050_read(MPU6050_PWR_MGMT_2, &c, 1);
 		HAL_Delay(10);
 		reading = c;
-		UART_string("PWR_MGMT_2: ", &huart2);
-		UART_hex(reading = c, &huart2);
+		//UART_string("PWR_MGMT_2: ", &huart2);
+		//UART_hex(reading = c, &huart2);
 		//UART_string("8", &huart2);
-		UART_string("\n", &huart2);
+		printf("PWR_MGMT_2: %x\n", reading);
 
 		// Clear the 'sleep' bit to start the sensor.
 		MPU6050_write_reg(MPU6050_PWR_MGMT_1, 0);
@@ -422,7 +432,7 @@ int main(void)
 		calibrate_sensors(j);  
 		set_last_read_angle_data(HAL_GetTick(), 0, 0, 0, 0, 0, 0, j);
 	}
-  /* USER CODE END 2 */
+	/* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -431,6 +441,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		
 		for(uint8_t index = 1; index < 4; index++){
 			selectI2CChannels(index);
 			int error;
@@ -444,12 +455,7 @@ int main(void)
 		 
 			// Convert gyro values to degrees/sec
 			float FS_SEL = 131;
-			/*
-			float gyro_x = (accel_t_gyro.value.x_gyro - base_x_gyro)/FS_SEL;
-			float gyro_y = (accel_t_gyro.value.y_gyro - base_y_gyro)/FS_SEL;
-			float gyro_z = (accel_t_gyro.value.z_gyro - b
-			ase_z_gyro)/FS_SEL;
-			*/
+			
 			float gyro_x = (accel_t_gyro.value.x_gyro - base_x_gyro[index])/FS_SEL;
 			float gyro_y = (accel_t_gyro.value.y_gyro - base_y_gyro[index])/FS_SEL;
 			float gyro_z = (accel_t_gyro.value.z_gyro - base_z_gyro[index])/FS_SEL;
@@ -490,24 +496,30 @@ int main(void)
 			set_last_read_angle_data(t_now, angle_x, angle_y, angle_z, unfiltered_gyro_angle_x, unfiltered_gyro_angle_y, unfiltered_gyro_angle_z, index);
 
 			// Send the data to the serial port
-			UART_string("Index:", &huart2);
-			UART_template("%d", index, &huart2);
+			
+			//UART_string("Index:", &huart2);
+			//UART_template("%d", index, &huart2);
+			printf("Index:%d",index);
 			//Serial.print(F("DEL:"));              //Delta T
-			UART_string("#DEL:", &huart2);
+			//UART_string("#DEL:", &huart2);
 			//Serial.print(dt, DEC);
-			UART_float("%.2f", dt, &huart2);
+			//UART_float("%.2f", dt, &huart2);
+			printf("#DEL:%.2f",dt);
 			//Serial.print(F("#FIL:"));             //Filtered angle
-			UART_string("#FIL:", &huart2);
+			//UART_string("#FIL:", &huart2);
 			//Serial.print(angle_x, 2);
-			UART_float("%.2f", angle_x, &huart2);
+			//UART_float("%.2f", angle_x, &huart2);
+			printf("#FIL:%.2f",angle_x);
 			//Serial.print(F(","));
-			UART_string(",", &huart2);
+			//UART_string(",", &huart2);
 			//Serial.print(angle_y, 2);
-			UART_float("%.2f", angle_y, &huart2);
+			//UART_float("%.2f", angle_y, &huart2);
+			printf(",%.2f",angle_y);
 			//Serial.print(F(","));
-			UART_string(",", &huart2);
+			//UART_string(",", &huart2);
 			//Serial.print(angle_z, 2);
-			UART_float("%.2f", angle_z, &huart2);
+			//UART_float("%.2f", angle_z, &huart2);
+			printf(",%.2f\n",angle_z);
 			//Serial.println(F(""));
 			//UART_string("\r\n", &huart2);
 			UART_string("\n", &huart2);
@@ -531,15 +543,14 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -560,7 +571,11 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+PUTCHAR_PROTOTYPE
+{
+	while(!(CDC_Transmit_FS((uint8_t *)&ch, 1)) == USBD_OK);
+	return ch;
+}
 /* USER CODE END 4 */
 
 /**
